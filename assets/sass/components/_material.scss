@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+.mat-toolbar {
+    background-color: $primary !important;
+    color: white;
+}
+
+mat-form-field.mat-form-field, mat-label, 
+.mat-form-field-appearance-legacy .mat-form-field-label {
+    color: $gray;
+}
+
+.mat-input-element {
+    caret-color: lighten($color: $primary, $amount: 1)!important;
+}
+
+.mat-form-field-ripple {
+    background-color: lighten($color: $primary, $amount: 1)!important;
+}
+
+.mat-mini-fab {
+    background-color: $primary !important;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .mat-toolbar {
+        justify-content: center;
+    }
+}

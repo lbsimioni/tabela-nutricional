@@ -1,0 +1,31 @@
+@charset "UTF-8";
+
+.error-page-container {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    &-title {
+        color: $primary;
+        font-size: 7rem;
+        font-weight: bold;
+    }
+
+    &-subject {
+        color: $primary;
+        font-size: 3rem;
+        text-align: center;
+    }
+
+    &-link a {
+        font-size: 1.5rem;
+        color: $primary !important;
+
+        &:hover {
+            opacity: .8;
+            text-decoration: none !important;
+        }
+    }
+}

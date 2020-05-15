@@ -1,0 +1,43 @@
+@charset "UTF-8";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Roboto", sans-serif !important;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.body-content {
+    height: 85vh;
+    padding: 2% 0 2% 0;
+    display: flex;
+}
+
+.center {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-primary-project {
+    background-color: $primary;
+    color: white;
+
+    &:hover {
+        background-color: darken($color: $primary, $amount: 1);
+        color: white;
+    }
+
+    &:checked {
+        background-color: $primary;
+    }
+
+    &:focus {
+        background-color: $primary;
+        box-shadow: 0 0 0 0.2rem transparent;
+    }
+}

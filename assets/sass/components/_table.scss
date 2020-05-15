@@ -1,0 +1,12 @@
+@charset "UTF-8";
+
+.table-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mat-table {
+    width: 100%;
+    max-height: 70%;
+    overflow: auto;
+}
