@@ -1,0 +1,100 @@
+<!-- Container de Filtros das Categorias  -->
+<div class="left-content">
+    <div [ngClass]="{
+        'side-content-click-in': leftContentClick,
+        'side-content-click-out': !leftContentClick,
+        'side-bar': true,
+        'side-bar-left': true,
+        'mat-elevation-z8': true}">
+        Filtros
+    </div>
+    <div class="side-bar-button-content">
+        <button 
+            mat-mini-fab 
+            matTooltip="Classificações"
+            class="btn-primary-project" 
+            (click)="leftSideBarClick()">
+            <mat-icon>menu_book</mat-icon>
+        </button>
+    </div>
+</div>
+
+<!-- Tabela Nutricional -->
+<div [ngClass]="{
+    'margin-side': true,
+    'margin-side-left': leftContentClick,
+    'margin-side-righ': rightContentClick
+    }">
+    <div class="table-actions">
+        <mat-form-field>
+            <mat-label>Pesquisa</mat-label>
+            <input 
+                autocomplete="off"
+                matInput 
+                (keyup)="applyFilter($event)" 
+                placeholder="Pesquise"
+                [(ngModel)]="valueSearch">
+                <button 
+                    mat-button 
+                    *ngIf="valueSearch" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Limpar" 
+                    (click)="valueSearch=''">
+                    <mat-icon>close</mat-icon>
+                  </button>
+        </mat-form-field>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    
+        <!-- Position Column -->
+        <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Descrição </th>
+            <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+        </ng-container>
+        
+        <!-- Name Column -->
+        <ng-container matColumnDef="base_qty">
+            <th mat-header-cell *matHeaderCellDef> Porção </th>
+            <td mat-cell *matCellDef="let element"> 
+                {{element.base_unit}}{{element.base_qty}}
+            </td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+</div>
+
+
+<!-- Container da Lista dos elementos selecionados -->
+<div class="right-content">
+    <div class="side-bar-button-content">
+        <button 
+            mat-mini-fab
+            matTooltip="Lista de Alimentos"
+            class="btn-primary-project" 
+            (click)="rightSideBarClick()">
+            <mat-icon>
+                list
+            </mat-icon>
+        </button>
+    </div>
+    <div [ngClass]="{
+        'side-content-click-in': rightContentClick,
+        'side-content-click-out': !rightContentClick,
+        'side-bar': true,
+        'side-bar-right': true,
+        'mat-elevation-z8': true}">
+        Lista
+    </div>
+</div>
+
+<!-- Div para bloquear background no modo mobile -->
+<div 
+    [class.absolut-darken]="!leftContentClick || !rightContentClick"
+    (click)="
+        !leftContentClick ? leftSideBarClick() : rightSideBarClick()">
+</div>
