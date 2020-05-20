@@ -11,6 +11,34 @@ body {
     min-height: 100vh;
 }
 
+input {
+    border: transparent;
+    border-bottom: 1px solid $gray;
+    word-wrap: break-word;
+    text-align: center;
+    width: 30px;
+
+    &:focus {
+        overflow: hidden;
+        outline: transparent;
+    }
+
+    &[type=number]::-webkit-inner-spin-button { 
+        -webkit-appearance: none;
+        
+    }
+    &[type=number] { 
+       -moz-appearance: textfield;
+       appearance: textfield;
+    
+    }
+}
+
+button:focus {
+    overflow: hidden;
+    outline: transparent;
+}
+
 .body-content {
     height: 85vh;
     padding: 2% 0 2% 0;
@@ -23,9 +51,27 @@ body {
     justify-content: center;
 }
 
+.text-left {
+    text-align: left;
+}
+
+.margin-top {
+    margin-top: 10px;
+}
+
+.padding {
+    padding: 1%;
+    padding-bottom: 10px;
+}
+
+
+.padding-left {
+    padding-left: 7px; 
+}
+
 .btn-primary-project {
     background-color: $primary;
-    color: white;
+    color: white !important;
 
     &:hover {
         background-color: darken($color: $primary, $amount: 1);
@@ -39,5 +85,81 @@ body {
     &:focus {
         background-color: $primary;
         box-shadow: 0 0 0 0.2rem transparent;
+    }
+}
+
+.button-delete-container {
+    position: absolute;
+    bottom: 10px;
+}
+
+.button-delete {
+    width: 90%;
+}
+
+.loading-container {
+    width: 100%;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+    stroke: $primary;
+}
+
+.button-selected {
+    background-color: rgba(0,0,0,.12) !important;
+    color: black !important;
+    cursor: no-drop !important;
+}
+
+@media only screen and (max-width: 600px) {
+    .margin-right {
+        &-small {
+            margin-right: 1px;
+        }
+    
+        &-large {
+            margin-right: 7px;
+        }
+    }
+    
+    .margin-left {
+        &-small {
+            margin-left: 1px;
+        }
+    
+        &-large {
+            margin-left: 7px;
+        }
+    }
+
+    .icon-show {
+        z-index: 200;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .margin-right {
+        &-small {
+            margin-right: 5px;
+        }
+    
+        &-large {
+            margin-right: 10px;
+        }
+    }
+    
+    .margin-left {
+        &-small {
+            margin-left: 5px;
+        }
+    
+        &-large {
+            margin-left: 10px;
+        }
     }
 }

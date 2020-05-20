@@ -1,0 +1,87 @@
+@charset "UTF-8";
+
+.text-first {
+    &-container {
+        display: flex;
+        padding: 1%;
+    }
+    
+    &-title {
+        color: $gray;
+        font-size: large;
+        text-transform: uppercase;
+        font-weight: 500;
+        align-self: center;
+    }
+
+    &-value {
+        color: $gray;
+    }
+
+}
+
+.container-second {
+    margin-bottom: 10px;
+}
+
+.text-second {
+
+    &-title {
+        color: $gray;
+        font-weight: bold;
+        width: 100%;
+        font-size: large;
+        background-color: $white-gray;
+        padding: 10px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    &-subject {
+        display: flex;
+        color: $gray;
+        flex-wrap: wrap;
+    }
+    
+}
+
+.container-third {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.text-third {
+    
+    &-title {
+        width: 100%;
+        color: $gray;
+        font-size: large;
+        font-weight: 450;
+    }
+
+    &-value {
+        width: 100%;
+        color: $gray;
+    }
+}
+
+.mat-dialog-content {
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px $primary;
+        border-radius: 10px;
+        background-color: #F5F5F5;
+    }
+    
+    &::-webkit-scrollbar {
+        width: 12px;
+        background-color: #F5F5F5;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px $primary;
+        background-color: darken($color: $primary, $amount: 0);
+    }
+}
