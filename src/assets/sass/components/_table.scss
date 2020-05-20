@@ -5,8 +5,87 @@
     justify-content: flex-end;
 }
 
+.table-list-food {
+    td.mat-cell:first-of-type {
+        padding-left: 0;
+        text-align: center;
+        min-width: 120px !important;
+    }
+
+}
+
+.table-container {
+    width: 100%;
+    max-height: 60vh;
+    overflow: auto;
+
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px $primary;
+        border-radius: 10px;
+        background-color: #F5F5F5;
+    }
+    
+    &::-webkit-scrollbar {
+        width: 12px;
+        background-color: #F5F5F5;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px $primary;
+        background-color: darken($color: $primary, $amount: 0);
+    }
+}
+
 .mat-table {
     width: 100%;
-    max-height: 70%;
-    overflow: auto;
+}
+
+.th-large {
+    width: 40% !important;
+    padding-right: 4%;
+    text-align: left;
+}
+
+.th-midle-large {
+    width: 30% !important;
+    padding-right: 2%;
+    padding-left: 2%;
+}
+
+.th-midle-small {
+    width: 10% !important;
+    text-align: right;
+    padding-left: 2%;
+}
+
+.th-small {
+    width: 10% !important;
+    padding-right: 2%;
+    padding-left: 2%;
+}
+
+@media only screen and (min-width: 600px) and (max-width: 900px) {
+    .table-list-food-container {
+        max-height: 50vh !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    td.mat-cell:first-of-type {
+        padding-left: 10px !important;
+    }
+    
+    td.mat-cell:last-of-type {
+        padding-right: 10px !important;
+    }
+
+    .table-container {
+        max-height: 70vh;
+        overflow-y: none;
+    }
+
+    .table-list-food-container {
+        max-height: 60vh !important;
+    }
 }

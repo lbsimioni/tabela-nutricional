@@ -1,0 +1,85 @@
+<h1 mat-dialog-title>{{ data.description }} 
+    <span> - {{ data.base_qty }} {{ data.base_unit }}</span>
+</h1> 
+
+<div mat-dialog-content>
+    <div *ngFor="let k of keys; let i = index">
+        <div class="container-first">
+            <div *ngIf="!isObjectNew(values[i]) 
+                && ((!cantShow(k)) || (isPortion(k)))" class="text-first-container">
+                <div class="text-first-title col-md-4" 
+                    *ngIf="!cantShow(k)">
+                    {{ k }}:
+                </div>
+                <div class="text-first-value col-md-8" 
+                    *ngIf="!cantShow(k)">
+                    {{ getValue(values[i]) }}
+                </div>
+
+                <div class="text-first-title col-md-4" *ngIf="isPortion(k)">
+                    Porção:
+                </div>
+                <div class="text-first-subject col-md-8" *ngIf="isPortion(k)">
+                    {{ values[i] }}{{ values[i + 1] }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div *ngFor="let k of keys; let i = index">
+        <div class="container-second">
+            <div class="text-second-container" *ngIf="isObjectNew(values[i])">
+                <div class="text-second-title">
+                    {{ k }}
+                </div>
+                <mat-divider></mat-divider>
+                <div class="text-second-subject">
+                    <ng-container 
+                    *ngFor="let ks of getKeysFromArray(values[i]); 
+                    let is = index">
+                        <div class="col-md-3 padding" 
+                            *ngIf="!isObjectNew(valuesSecond[is])">
+                            <div class="text-third-title">
+                                {{ ks }}
+                            </div>
+                            <div class="text-third-subject">
+                                {{ getValue(valuesSecond[is]) }}
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <ng-container 
+                    *ngFor="let ks of getKeysFromArray(values[i]); 
+                    let is = index">
+                        <ng-container *ngIf="isObjectNew(valuesSecond[is])">
+                            <div class="text-second-title margin-top">
+                                {{ ks }}
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div  class="container-third">
+                                <ng-container 
+                                *ngFor="
+                                let kt of getKeysFromArray(valuesSecond[is], false); 
+                                let it = index">
+                                    <div class="col-md-3 padding">
+                                        <div class="text-third-title">
+                                            {{ kt }}
+                                        </div>
+                                        <div class="text-third-subject">
+                                            {{ getValue(valuesThird[it]) }}
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Fechar</button>
+  <button mat-button (click)="save()" cdkFocusInitial class="btn-primary-project">Adicionar a lista</button>
+</div>

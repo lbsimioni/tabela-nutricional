@@ -7,6 +7,8 @@ import { AppComponent } from './app.component';
 import { CommomModule } from './commom';
 import { ModulesModule } from './modules';
 import { ErrorsModule } from './errors';
+import { DialogFoodModule } from './utils';
+
  
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { ErrorsModule } from './errors';
     BrowserAnimationsModule,
     CommomModule,
     ModulesModule,
-    ErrorsModule
+    ErrorsModule,
+    DialogFoodModule
   ],
   providers: [],
   bootstrap: [

@@ -3,28 +3,65 @@
     <div [ngClass]="{
         'side-content-click-in': leftContentClick,
         'side-content-click-out': !leftContentClick,
+        'side-content-small': !leftContentClick,
         'side-bar': true,
         'side-bar-left': true,
         'mat-elevation-z8': true}">
-        Filtros
+        <div class="side-bar-title">Classificações</div>
+        <mat-list *ngIf="!leftContentClick && !categoryLoading">
+                
+            <mat-list-item class="padding-left">
+                <button 
+                mat-flat-button 
+                [ngClass]="{
+                    'col-md-12': true,
+                    'text-left': true,
+                    'button-selected': categoryActual === 0
+                }"
+                (click)="filterCategory(0)"
+                [disabled]="buttonCategoryDisabled(0)">
+                    Todas as Classificações
+                    <mat-divider></mat-divider>
+                </button>
+            </mat-list-item>
+            <mat-list-item 
+                *ngFor="let c of categories" class="padding-left"> 
+                <button 
+                mat-flat-button 
+                [ngClass]="{
+                    'col-md-12': true,
+                    'text-left': true,
+                    'button-selected': categoryActual === c.id
+                }"
+                (click)="filterCategory(c.id)"
+                [disabled]="buttonCategoryDisabled(c.id)">
+                    {{ c.category }}
+                    <mat-divider></mat-divider>
+                </button>
+            </mat-list-item>
+        </mat-list>
+        <div class="loading-container" *ngIf="categoryLoading">
+            <mat-spinner></mat-spinner>
+            Carregando...
+        </div>
     </div>
-    <div class="side-bar-button-content">
+    <div [ngClass]="{
+        'side-bar-button-content': true,
+        'margin-left-large': leftContentClick,
+        'margin-left-small': !leftContentClick}">
         <button 
             mat-mini-fab 
             matTooltip="Classificações"
             class="btn-primary-project" 
-            (click)="leftSideBarClick()">
+            (click)="leftSideBarClick()"
+            [disabled]="categoryLoading || tableLoading">
             <mat-icon>menu_book</mat-icon>
         </button>
     </div>
 </div>
 
 <!-- Tabela Nutricional -->
-<div [ngClass]="{
-    'margin-side': true,
-    'margin-side-left': leftContentClick,
-    'margin-side-righ': rightContentClick
-    }">
+<div class="margin-side">
     <div class="table-actions">
         <mat-form-field>
             <mat-label>Pesquisa</mat-label>
@@ -46,37 +83,90 @@
         </mat-form-field>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-    
-        <!-- Position Column -->
-        <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef> Descrição </th>
-            <td mat-cell *matCellDef="let element"> {{element.description}} </td>
-        </ng-container>
+    <div class="table-container mat-elevation-z8">
+        <table *ngIf="!tableLoading" mat-table matSort [dataSource]="dataSource">
         
-        <!-- Name Column -->
-        <ng-container matColumnDef="base_qty">
-            <th mat-header-cell *matHeaderCellDef> Porção </th>
-            <td mat-cell *matCellDef="let element"> 
-                {{element.base_unit}}{{element.base_qty}}
-            </td>
-        </ng-container>
-        
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+            <ng-container matColumnDef="description">
+                <th class="th-large" mat-header-cell *matHeaderCellDef mat-sort-header> 
+                    Descrição 
+                </th>
+                <td mat-cell *matCellDef="let element"> 
+                    {{ element.description }} 
+                </td>
+            </ng-container>
 
+            <ng-container matColumnDef="category">
+                <th class="th-midle-large" mat-header-cell *matHeaderCellDef mat-sort-header> 
+                    Categoria 
+                </th>
+                <td mat-cell *matCellDef="let element"> 
+                    {{ getCategoria(element.category_id) }} 
+                </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="portion">
+                <th class="th-small" mat-header-cell *matHeaderCellDef mat-sort-header> 
+                    Porção 
+                </th>
+                <td mat-cell *matCellDef="let element"> 
+                    {{ element.base_qty }} {{ element.base_unit }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="energy">
+                <th class="th-small" mat-header-cell *matHeaderCellDef mat-sort-header> 
+                    Energia 
+                </th>
+                <td mat-cell *matCellDef="let element"> 
+                    {{ (element.attributes.energy.kcal * 1).toFixed(2) }} kcal
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="verMais">
+                <th class="th-middle-small" mat-header-cell *matHeaderCellDef> 
+                </th>
+                <td mat-cell *matCellDef="let element"> 
+                    <button 
+                        [ngClass]="{
+                            'icon-show': leftContentClick && rightContentClick
+                        }"
+                        matTooltip="ver mais"
+                        mat-icon-button
+                        (click)="openFoodDialog(element.id)">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+
+        <div class="loading-container" *ngIf="tableLoading">
+            <mat-spinner></mat-spinner>
+            Carregando...
+        </div>
+    </div>
 </div>
 
 
 <!-- Container da Lista dos elementos selecionados -->
 <div class="right-content">
-    <div class="side-bar-button-content">
+    <div [ngClass]="{
+        'side-bar-button-content': true,
+        'margin-right-large': rightContentClick,
+        'margin-right-small': !rightContentClick}">
         <button 
             mat-mini-fab
-            matTooltip="Lista de Alimentos"
+            matTooltip="Alimentos Selecionados"
             class="btn-primary-project" 
-            (click)="rightSideBarClick()">
+            (click)="rightSideBarClick()"
+            [disabled]="foodListLoading || tableLoading"
+            [(matBadge)]="matBadgeText" 
+            matBadgePosition="before" 
+            matBadgeColor="warn"
+            [matBadgeHidden]="matBadgeHidden">
             <mat-icon>
                 list
             </mat-icon>
@@ -85,16 +175,98 @@
     <div [ngClass]="{
         'side-content-click-in': rightContentClick,
         'side-content-click-out': !rightContentClick,
+        'side-content-large': !rightContentClick,
         'side-bar': true,
         'side-bar-right': true,
         'mat-elevation-z8': true}">
-        Lista
+        <div class="side-bar-title">
+            Alimentos Selecionados
+        </div>
+        <div class="table-container table-list-food-container" 
+            *ngIf="!rightContentClick && foodList.length !== 0 && !foodListLoading">
+            <table 
+                class="table-list-food" 
+                mat-table matSort [dataSource]="dataSourceList">
+            
+                <ng-container matColumnDef="qtd">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+                        Qtd 
+                    </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        <button 
+                            mat-icon-button 
+                            (click)="changeQtdFood(element, -1, true)">
+                            <mat-icon>remove</mat-icon>
+                        </button>
+                        <input [id]="element.id" [value]="element.qtd"
+                        type="number" (keyup)="inputQtdFood($event, element)" /> 
+                        <button 
+                            mat-icon-button
+                            (click)="changeQtdFood(element, 1, true)">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+                        Descrição 
+                    </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        {{ element.description }} 
+                    </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="energy">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+                        Energia 
+                    </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        {{ (element.energy * 1).toFixed(2) }} kcal
+                    </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="delete">
+                    <th mat-header-cell *matHeaderCellDef> 
+                    </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        <button 
+                            (click)="removeFood(element)"
+                            mat-icon-button 
+                            color="warn"
+                            matTooltip="Excluir">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsList; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsList;"></tr>
+    
+            </table>
+            <div class="center margin-top button-delete-container">
+                <button 
+                    class="button-delete"
+                    mat-raised-button color="warn" (click)="removeAllFood()">
+                    Excluir todos os itens
+                </button>
+            </div>
+        </div>
+
+        <div class="loading-container" *ngIf="foodListLoading">
+            <mat-spinner></mat-spinner>
+            Carregando...
+        </div>
+
+        <div *ngIf="foodList.length === 0" class="alert alert-warning margin-top">
+            Nenhum alimento selecionado
+        </div>
     </div>
 </div>
 
-<!-- Div para bloquear background no modo mobile -->
+<!-- Div de bloqueio background -->
 <div 
     [class.absolut-darken]="!leftContentClick || !rightContentClick"
-    (click)="
-        !leftContentClick ? leftSideBarClick() : rightSideBarClick()">
+    (click)="leftSideBarClick(true);
+            rightSideBarClick(true);">
 </div>

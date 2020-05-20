@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -12,6 +13,7 @@ import { FooterModule } from './footer';
   ],
   imports: [
     CommonModule,
+    BrowserModule,
     RouterModule,
     NavbarModule,
     FooterModule

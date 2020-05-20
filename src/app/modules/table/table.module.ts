@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,10 +12,17 @@ import {
   MatSortModule,
   MatTableModule,
   MatInputModule,
-  MatButtonModule
+  MatButtonModule,
+  MatListModule,
+  MatSnackBarModule,
+  MatPaginatorModule,
+  MatProgressSpinnerModule,
+  MatBadgeModule
 } from '@angular/material';
 
 import { TableComponent } from './table.component';
+import { TableService } from './service';
+import { DialogFoodComponent } from 'src/app/utils';
 
 @NgModule({
   declarations: [
@@ -22,6 +30,7 @@ import { TableComponent } from './table.component';
   ],
   imports: [
     CommonModule,
+    BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
@@ -33,7 +42,19 @@ import { TableComponent } from './table.component';
     MatSortModule,
     MatTableModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatListModule,
+    MatSnackBarModule,
+    MatPaginatorModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatBadgeModule
+  ],
+  entryComponents: [
+    DialogFoodComponent
+  ],
+  providers: [
+    TableService
   ]
 })
 export class TableModule { }

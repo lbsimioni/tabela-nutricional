@@ -26,8 +26,55 @@ mat-form-field.mat-form-field, mat-label,
     }
 }
 
+.mat-simple-snackbar-action {
+    color: $primary;
+}
+
+.mat-dialog-title span {
+    font-weight: normal;
+    font-size: medium;
+}
+
+.dialog-content {
+    display: flex !important;
+    flex-wrap: wrap;
+
+    & .ng-star-inserted {
+        width: 25%;
+        padding-left: 2.5%;
+        padding-right: 2.5%;
+    }
+}
+
+.mat-dialog-actions {
+    justify-content: flex-end;
+}
+
+.mat-list-base .mat-list-item {
+    height: auto !important;
+
+    & button {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
+
+@media only screen and (min-width: 900px) {
+    .mat-tooltip {
+        visibility: visible !important;
+    }
+}
+
 @media only screen and (max-width: 900px) {
     .mat-toolbar {
         justify-content: center;
+    }
+
+    .mat-list-base .mat-list-item .mat-list-item-content {
+        padding: 0 !important;
+    }
+
+    .mat-tooltip {
+        visibility: hidden !important;
     }
 }
