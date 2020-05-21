@@ -6,13 +6,22 @@
 }
 
 .table-list-food {
-    td.mat-cell:first-of-type {
-        padding-left: 0;
-        text-align: center;
-        min-width: 120px !important;
+    &-container {
+        overflow-x: hidden !important;
     }
 
+    td.mat-cell:first-of-type {
+        padding-left: 10px;
+    }
+
+    td.mat-footer-cell:first-of-type {
+        padding-left: 30px;
+    }
 }
+
+tr.mat-footer-row {
+    font-weight: bold;
+  }
 
 .table-container {
     width: 100%;
@@ -82,7 +91,6 @@
 
     .table-container {
         max-height: 70vh;
-        overflow-y: none;
     }
 
     .table-list-food-container {
