@@ -1,4 +1,3 @@
-import { element } from 'protractor';
 import { CookieService } from 'ngx-cookie-service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { 
@@ -8,10 +7,14 @@ import {
   MatSnackBar, 
   MatDialog
    } from '@angular/material';
-
+   import * as XLSX from 'xlsx';
 import { DialogFoodComponent } from 'src/app/utils'
 import { Food, FoodList } from '../../models';
 import { TableService } from './service';
+import { environment } from 'src/environments/environment';
+
+import * as jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-table',
@@ -19,44 +22,55 @@ import { TableService } from './service';
   styleUrls: ['./table.component.scss']
 })
 export class TableComponent implements OnInit {
-  leftContentClick: boolean = true;
-  rightContentClick: boolean = true;
-  valueSearch: string = "";
+  private readonly COOKIE_KEY: string = environment.cookieKey;
+  private readonly HEADER_EXPORT: string[] = ['Descrição', 'Porção', 'Energia'];
 
-  // Variáveis de loading
+  //#region Loading variables
   categoryLoading: boolean = true;
   tableLoading: boolean = true;
   foodListLoading: boolean = true;
+  //#endregion
 
+  //#region SideBar Variables
   categoryActual: number = 0;
   categories: any[] = []; 
-  foodList: FoodList[] = [];
+  leftContentClick: boolean = true;
+  rightContentClick: boolean = true;
+  //#endregion
+
+  //#region Auxiliary Variables 
   matBadgeText: number = 0;
   matBadgeHidden: boolean = true;
-  
-  // Tabela de Comida principal
-  dataFull: Food[] = [];
-  dataCurrent: Food[] = [];
-  displayedColumns: string[] = [
-    'description', 
-    'category',
-    'portion', 
-    'energy',
-    'verMais'
-  ];
-  dataSource = new MatTableDataSource(this.dataCurrent);
-
-  // Tabela de Comida para Lista
-  displayedColumnsList: string[] = [
-    'qtd',
-    'description',
-    'energy',
-    'delete'
-  ];
-  dataSourceList = new MatTableDataSource(this.foodList);
-
   @ViewChild(MatSort, {static: true}) sort: MatSort;
+  valueSearch: string = "";
+  //#endregion
+  
+  //#region Tables
+    //#region Table Food Principal
+    dataFull: Food[] = [];
+    dataCurrent: Food[] = [];
+    displayedColumns: string[] = [
+      'description', 
+      'category',
+      'portion', 
+      'energy',
+      'verMais'
+    ];
+    dataSource = new MatTableDataSource(this.dataCurrent);
+    //#endregion
 
+    //#region Table Food List (Side bar)
+    foodList: FoodList[] = [];
+    displayedColumnsList: string[] = [
+      'description',
+      'portion',
+      'energy',
+      'delete'
+    ];
+    dataSourceList = new MatTableDataSource(this.foodList);
+    //#endregion
+  //#endregion
+  
   constructor(
     private service: TableService,
     private snackBar: MatSnackBar,
@@ -70,6 +84,8 @@ export class TableComponent implements OnInit {
     this.initTableList();
   }
 
+  // Function
+
   initTable(): void {
     this.tableLoading = true;
     this.leftSideBarClick(true);
@@ -77,14 +93,10 @@ export class TableComponent implements OnInit {
     this.dataSource = new MatTableDataSource(this.dataCurrent);
     this.dataSource.sort = this.sort;
     this.tableLoading = false;
+    this.applyTextFilter();
   }
 
-  getCategoria(id: number): string {
-    if (this.categories.length > 0){
-      return this.categories[id - 1].category;
-    }
-  }
-
+  //#region Async Function, init datas
   initCategories(): void {
     this.categoryLoading = true;
     this.service.categories().subscribe(
@@ -105,7 +117,9 @@ export class TableComponent implements OnInit {
       }
     );
   }
+  //#endregion
 
+  //#region Side Bar Controls
   leftSideBarClick(value: boolean = !this.leftContentClick): void {
     if (window.innerWidth < 600)
       this.rightContentClick = true;
@@ -125,10 +139,13 @@ export class TableComponent implements OnInit {
     this.matBadgeHidden = true;
     this.saveCookie(JSON.stringify(this.foodList));
   }
+  //#endregion
 
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  //#region Auxiliary Function 
+  applyTextFilter(): void {
+    this.tableLoading = true;
+    this.dataSource.filter = this.valueSearch.trim().toLowerCase();
+    this.tableLoading = false;
   }
 
   filterCategory(id: number): void {
@@ -143,11 +160,17 @@ export class TableComponent implements OnInit {
         }
       );
     }
-    
     this.initTable();
   }
 
-  // Lista de Alimentos selecionados
+  getCategoria(id: number): string {
+    if (this.categories.length > 0){
+      return this.categories[id - 1].category;
+    }
+  }
+  //#endregion
+
+  //#region Table Food List
   initTableList(): void {
     this.foodListLoading = true;
     this.getFoodTable();
@@ -164,92 +187,113 @@ export class TableComponent implements OnInit {
     this.foodListLoading = false;
   }
 
-  getFoodTable(): void {
-    if (this.cookieService.get('foodList'))
-      this.foodList = JSON.parse(this.cookieService.get('foodList'));
-    else
-      this.foodList = [];
-  }
-
-  addFood(food: FoodList): void {
-    this.foodListLoading = true;
-    let find = this.foodList.find(
-      f => {
-        if(f.id === food.id)
-          return food;
-      }
-    );
-    if (typeof find === 'undefined') {
-      if(food.qtd === 0)
-        food.qtd = 1;
-      this.foodList.push(food);
-      if(this.foodList.length > 1) {
-        this.foodList.sort(
-          (a, b) => {
-            return a.position - b.position;
-          }
-        );
-      }
-      this.saveCookie(JSON.stringify(this.foodList));
-      this.initTableList();
-    } else {
-      this.foodListLoading = false;
-      this.snackBar.open('Alimento já está em sua lista', '', {
-        duration: 2000,
-      })
+    //#region FoodListControl
+    getFoodTable(): void {
+      if (this.cookieService.get(this.COOKIE_KEY))
+        this.foodList = JSON.parse(this.cookieService.get(this.COOKIE_KEY));
+      else
+        this.foodList = [];
     }
-  }
 
-  removeAllFood(): void {
-    let list = this.foodList;
-    this.foodList = [];
-    this.saveCookie(JSON.stringify(this.foodList));
+    addFood(food: FoodList): void {
+      this.foodListLoading = true;
+      let find = this.foodList.find(
+        f => {
+          if(f.id === food.id)
+            return food;
+        }
+      );
+      if (typeof find === 'undefined') {
+        if (food.portion === 0)
+          food.portion = food.portionBase;
+        this.foodList.push(food);
+        if(this.foodList.length > 1) {
+          this.foodList.sort(
+            (a, b) => {
+              return a.position - b.position;
+            }
+          );
+        }
+        this.saveCookie(JSON.stringify(this.foodList));
+        this.initTableList();
+      } else {
+        this.foodListLoading = false;
+        this.snackBar.open('Alimento já está em sua lista', '', {
+          duration: 2000,
+        })
+      }
+    }
 
-    this.initTableList();
+    removeAllFood(): void {
+      let list = this.foodList;
+      this.foodList = [];
+      this.saveCookie(JSON.stringify(this.foodList));
 
-    let message = 'Lista excluida com sucesso';
-    let action = 'Desfazer';
-
-    this.snackBar.open(message, action, {
-      duration: 2000,
-    }).onAction().subscribe(() => {
-      this.saveCookie(JSON.stringify(list));
       this.initTableList();
-    });;
-  }
 
-  removeFood(foodList: FoodList): void {
-    let i = this.foodList.indexOf(foodList);
-    this.foodList.splice(i, 1);
+      let message = 'Lista excluida com sucesso';
+      let action = 'Desfazer';
 
-    this.saveCookie(JSON.stringify(this.foodList));
+      this.snackBar.open(message, action, {
+        duration: 2000,
+      }).onAction().subscribe(() => {
+        this.saveCookie(JSON.stringify(list));
+        this.initTableList();
+      });;
+    }
 
-    this.initTableList();
-    this.openSnackBar(foodList);
-  } 
+    removeFood(foodList: FoodList): void {
+      let i = this.foodList.indexOf(foodList);
+      this.foodList.splice(i, 1);
 
-  changeQtdFood(element: FoodList, value: number, base: boolean = false): void {
-    let qtd: number = 0;
+      this.saveCookie(JSON.stringify(this.foodList));
+
+      this.initTableList();
+      this.openSnackBar(foodList);
+    } 
+    //#endregion
+
+    //#region FoodListActions
+  changePortionFood(event: Event, element: FoodList): void {
+    let value = Number((event.target as HTMLInputElement).value);
     let indice = this.foodList.indexOf(element);
 
-    if (base) {
-      qtd = this.foodList[indice].qtd;
-    }
-    this.foodList[indice].qtd = qtd + value;
+    if (value > 0) {
+      this.foodList[indice].portion = value;
+      let food = this.foodList[indice];
+      let peso = food.portion / food.portionBase;
+      this.foodList[indice].energy = food.energyBase * peso;
 
-    if (this.foodList[indice].qtd === 0) {
+    } else {
       this.removeFood(this.foodList[indice]);
     }
 
     this.saveCookie(JSON.stringify(this.foodList));
+    this.initTableList();
   }
 
-  inputQtdFood(event: Event, element: FoodList): void {
-    let value = Number((event.target as HTMLInputElement).value);
-    this.changeQtdFood(element, value);
+  calcPortion(): string {
+    let value = this.foodList.map(f => f.portion).reduce(
+      (acc, value) => acc + value, 0);
+
+    if(value >= 1000) {
+      return `${value / 1000} Kg`;
+    } 
+
+    return `${value} g`
   }
 
-  // Scack Bar
+  calcKcal(): string {
+    let value = this.foodList.map(f => f.energy).reduce(
+      (acc, value) => acc + value, 0);
+
+    return `${value.toFixed(2)} kcal`
+  }
+  //#endregion
+
+  //#endregion
+
+  //#region Bar
   openSnackBar(food: FoodList): void {
     let message = 'Item excluido com sucesso';
     let action = 'Desfazer';
@@ -277,13 +321,77 @@ export class TableComponent implements OnInit {
         this.addFood(result);
     });
   }
+  //#endregion
 
+  //#region  Geral
   saveCookie(value: string): void {
-    this.cookieService.set('foodList', value)
+    this.cookieService.set(this.COOKIE_KEY, value)
   }
 
   buttonCategoryDisabled(id: number): boolean {
     return this.categoryActual === id;
   }
+  //#endregion
 
+  //#region Export
+  exportAsExcel(): void {
+    var table = this.createTable();
+    const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(table);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    /* save to file */
+    XLSX.writeFile(wb, 'Tabela Nutricional.xlsx');
+
+  }
+
+  exportAsPdf(): void {
+    let doc = new jsPDF();
+    let body = [];
+
+    this.foodList.forEach(
+      f => {
+        body.push(
+          [f.description, `${f.portion} ${f.portionUnit}`, f.energy.toFixed(2)]
+        );
+      }
+    );
+
+    doc.autoTable({
+      head: [this.HEADER_EXPORT],
+      body: body
+    });
+
+
+    doc.save('Tabela Nutricional.pdf');
+  }
+
+  createTable(): any {
+    let thead: string = "<thead><tr>";
+    let tbody: string = "<tbody>";
+
+    this.HEADER_EXPORT.forEach(
+      k => {
+        thead += `<th>${k}</th>`;
+      }
+    );
+    thead += '</tr></thead>';
+
+    this.foodList.forEach(
+      f => {
+        tbody += 
+        `<tr>
+          <td>${f.description}</td> 
+          <td>${f.portion} ${f.portionUnit}</td>
+          <td>${f.energy.toFixed(2)}</td>
+        </tr>`;
+      }
+    );
+    tbody += "</tbody>";
+
+    let t = document.createElement('table');
+    t.innerHTML = thead + tbody;
+    return t;
+  }
+  //#endregion
 }

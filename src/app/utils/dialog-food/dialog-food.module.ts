@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import {
   MatDialogModule, 
   MatButtonModule,
-  MatDividerModule
+  MatDividerModule,
+  MatIconModule
 } from '@angular/material';
 
 import { DialogFoodComponent } from './dialog-food.component';
@@ -17,7 +18,8 @@ import { DialogFoodComponent } from './dialog-food.component';
     CommonModule,
     MatDialogModule,
     MatButtonModule,
-    MatDividerModule
+    MatDividerModule,
+    MatIconModule
   ],
   exports: [
     DialogFoodComponent

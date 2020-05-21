@@ -17,7 +17,9 @@ import {
   MatSnackBarModule,
   MatPaginatorModule,
   MatProgressSpinnerModule,
-  MatBadgeModule
+  MatBadgeModule,
+  MatFormFieldModule,
+  MatSelectModule
 } from '@angular/material';
 
 import { TableComponent } from './table.component';
@@ -48,7 +50,9 @@ import { DialogFoodComponent } from 'src/app/utils';
     MatPaginatorModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   entryComponents: [
     DialogFoodComponent

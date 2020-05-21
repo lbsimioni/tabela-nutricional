@@ -1,20 +1,28 @@
 import { CookieService } from 'ngx-cookie-service';
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { isString, isNumber, isNullOrUndefined } from 'util';
+import { isString, isNumber } from 'util';
 
 import { FoodList } from 'src/app/models';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-dialog-food',
   templateUrl: './dialog-food.component.html',
 })
 export class DialogFoodComponent {
-  values: any[] = [];
-  keys: any[] = [];
+  private readonly COOKIE_KEY: string = environment.cookieKey;
 
+  //#region KEYS TRANSLATE
+  private readonly KEYS_TRANSLATE: string[][] = [['id',  'id'],  ['description',  'descrição'], ['base_qty',  'quantidade Base'], ['base_unit',  'unidade base'], ['category_id',  'Categoria ID'], ['attributes',  'atributos'], ['Nutrients',  'Nutrientes'], ['energy',  'energia'], ['kcal',  'kcal'], ['kj',  'kj'], ['ashes',  'cinzas'], ['calcium',  'cálcio'], ['carbohydrate',  'carboidrato'], ['cholesterol',  'colesterol'], ['copper',  'cobre'], ['fiber',  'fibra'], ['humidity',  'umidade'], ['lipid',  'lipídico'], ['magnesium',  'magnésio'], ['manganese',  'manganês'], ['niacin',  'niacina'], ['phosphorus',  'fósforo'], ['potassium',  'potássio'], ['protein',  'proteína'], ['pyridoxine',  'piridoxina'], ['retinol',  'retinol'], ['riboflavin',  'riboflavina'], ['sodium',  'sódio'], ['thiamine',  'tiamina'], ['vitaminC',  'vitamina C'], ['zinc',  'zinco'], ['amino_acids',  'aminoácidos'], ['alanine',  'alanina'], ['arginine',  'arginina'], ['aspartic',  'aspártico'], ['cystine',  'cistina'], ['glutamic',  'glutâmico'], ['glycine',  'glicina'], ['histidine',  'histidina'], ['isoleucine',  'isoleucina'], ['leucine',  'leucina'], ['lysine',  'lisina'], ['methionine',  'metionina'], ['phenylalanine',  'fenilalanina'], ['proline',  'prolina'], ['serine',  'serina'], ['threonine',  'treonina'], ['tryptophan',  'triptofano'], ['tyrosine',  'tirosina'], ['valine',  'valina'], ['fatty_acids',  'ácidos graxos'], ['saturated',  'saturado'], ['monounsaturated',  'monoinsaturado'], ['polyunsaturated',  'poliinsaturado'], ['12:0',  '12:0'], ['14:0',  '14:0'], ['16:0',  '16:0'], ['18:0',  '18:0'], ['20:0',  '20:0'], ['22:0',  '22:0'], ['24:0',  '24:0'], ['16:1',  '16:1'], ['18:1',  '18:1'], ['20:1',  '20:1'], ['18:2',  '18:2'], ['18:3',  '18:3'], ['18:1t',  '18:1t'], ['18:2t',  '18:2t']];
+  //#endregion
+
+  //#region  Variables
+  values: any[] = [];
   valuesSecond: any[] = [];
-  valuesThird: any[] = []
+  valuesThird: any[] = [];
+  keys: any[] = [];
+  //#endregion
 
   constructor(
     public dialogRef: MatDialogRef<DialogFoodComponent>,
@@ -25,34 +33,9 @@ export class DialogFoodComponent {
     this.getKeys();
   }
 
-  getValues(): void {
-    this.values = Object.values(this.data);
-  }
-
+  //#region Function to get Keys of Objects
   getKeys(): void {
     this.keys = Object.keys(this.data);
-  }
-
-  isObjectNew(value: any[]): boolean {
-    return isString(value) ? false : Object.values(value).length > 2;
-  }
-
-  // Metodos utilizados para montar as informações principais dos alimentos
-  cantShow(key: string): boolean {
-    return (key === 'base_qty') || (key === 'base_unit') || (key === 'category_id'); 
-  }
-
-  isPortion(key: string): boolean {
-    return (key === 'base_qty');
-  }
-
-  // Metodos utilizados para montar as informações dentro de um array
-  getValuesFromArray(array: any[]): void {
-    this.valuesSecond = Object.values(array);
-  }
-
-  getValuesFromArrayThird(array: any[]): void {
-    this.valuesThird = Object.values(array);
   }
 
   getKeysFromArray(array: any[], values: boolean = true): any[] {
@@ -62,7 +45,37 @@ export class DialogFoodComponent {
       this.getValuesFromArrayThird(array);
     return Object.keys(array);
   }
+  //#endregion
 
+  //#region Controls Functions
+  cantShow(key: string): boolean {
+    return (key === 'base_qty') || (key === 'base_unit') || (key === 'category_id'); 
+  }
+
+  isPortion(key: string): boolean {
+    return (key === 'base_qty');
+  }
+
+  isObjectNew(value: any[]): boolean {
+    return isString(value) ? false : Object.values(value).length > 2;
+  }
+  //#endregion
+
+  //#region Functions to get Values of Objects
+  getValues(): void {
+    this.values = Object.values(this.data);
+  }
+
+  getValuesFromArray(array: any[]): void {
+    this.valuesSecond = Object.values(array);
+  }
+
+  getValuesFromArrayThird(array: any[]): void {
+    this.valuesThird = Object.values(array);
+  }
+  //#endregion
+
+  //#region Auxiliary Functions
   getValue(array: any[]): string {
     if(isString(array) || isNumber(array))
       return array.toString();
@@ -84,17 +97,33 @@ export class DialogFoodComponent {
     return `${Number(v[0]).toFixed(2)}${unit}`;
   }
 
-  // Ações
+  traslateKey(key: string): string {
+    var value: string = key;
+    this.KEYS_TRANSLATE.find(
+      k => {
+        if (k[0] === key) {
+          value = k[1];
+          return;
+        }
+      }
+    );
+
+    return value;
+  }
+  //#endregion
+
+  //#region Component Functions
   save(): void {
     let v = this.values;
     let pDescription = this.keys.indexOf('description');
     let pAttr = this.keys.indexOf('attributes');
+    let pPortion = this.keys.indexOf('base_qty');
     let position = 1;
     
 
     let newList: FoodList[]  = [];
-    if (this.cookieService.get('foodList')) {
-      newList = JSON.parse(this.cookieService.get('foodList'));
+    if (this.cookieService.get(this.COOKIE_KEY)) {
+      newList = JSON.parse(this.cookieService.get(this.COOKIE_KEY));
       if (newList.length > 0) {
         let lastItem = newList[newList.length - 1];
         position = lastItem.position + 1;
@@ -103,16 +132,20 @@ export class DialogFoodComponent {
     let data: FoodList = { 
       id: v[0], 
       description: v[pDescription],
+      energyBase: v[pAttr].energy.kcal,
       energy: v[pAttr].energy.kcal,
-      qtd: 1,
+      portionBase: v[pPortion],
+      portion: v[pPortion],
+      portionUnit: v[pPortion + 1],
       position: position, 
       lido: false  
     };
-    this.onNoClick(data);
+    this.close(data);
   }
 
-  onNoClick(data?: FoodList): void {
+  close(data?: FoodList): void {
     this.dialogRef.close(data);
   }
+  //#endregion
 
 }

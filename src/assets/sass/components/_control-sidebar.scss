@@ -108,11 +108,13 @@
         }
 
         &-small {
-            width: 25vw;
+            width: 35vw;
+            max-width: 300px;
         }
 
         &-large {
             width: 45vw;
+            max-width: 450px;
         }
     }
 

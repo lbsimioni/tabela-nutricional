@@ -68,7 +68,7 @@
             <input 
                 autocomplete="off"
                 matInput 
-                (keyup)="applyFilter($event)" 
+                (keyup)="applyTextFilter()" 
                 placeholder="Pesquise"
                 [(ngModel)]="valueSearch">
                 <button 
@@ -77,14 +77,15 @@
                     matSuffix 
                     mat-icon-button 
                     aria-label="Limpar" 
-                    (click)="valueSearch=''">
+                    (click)="valueSearch=''; applyTextFilter()">
                     <mat-icon>close</mat-icon>
                   </button>
         </mat-form-field>
     </div>
 
     <div class="table-container mat-elevation-z8">
-        <table *ngIf="!tableLoading" mat-table matSort [dataSource]="dataSource">
+        <table *ngIf="!tableLoading && dataSource.filteredData.length > 0" 
+        mat-table matSort [dataSource]="dataSource">
         
             <ng-container matColumnDef="description">
                 <th class="th-large" mat-header-cell *matHeaderCellDef mat-sort-header> 
@@ -143,9 +144,14 @@
 
         </table>
 
-        <div class="loading-container" *ngIf="tableLoading">
-            <mat-spinner></mat-spinner>
-            Carregando...
+        <div class="loading-container" *ngIf="tableLoading || dataSource.filteredData.length === 0">
+            <div *ngIf="dataSource.filteredData.length === 0 && !tableLoading" class="alert alert-warning center">
+                Nenhum dado encontrado
+            </div>
+            <div *ngIf="tableLoading">
+                <mat-spinner></mat-spinner>
+                Carregando...
+            </div>
         </div>
     </div>
 </div>
@@ -181,39 +187,56 @@
         'mat-elevation-z8': true}">
         <div class="side-bar-title">
             Alimentos Selecionados
+            <div class="action">
+                <button
+                    mat-icon-button
+                    (click)="exportAsExcel()"
+                    matTooltip="Exportar como Excel"
+                    *ngIf="foodList.length !== 0 && !foodListLoading">
+                        <mat-icon>description</mat-icon>
+                </button>
+                <button
+                    mat-icon-button
+                    (click)="exportAsPdf()"
+                    matTooltip="Exportar como PDF"
+                    *ngIf="foodList.length !== 0 && !foodListLoading">
+                        <mat-icon>picture_as_pdf</mat-icon>
+                </button>
+            </div>
         </div>
         <div class="table-container table-list-food-container" 
             *ngIf="!rightContentClick && foodList.length !== 0 && !foodListLoading">
-            <table 
+            <table  
+                mat-table
                 class="table-list-food" 
-                mat-table matSort [dataSource]="dataSourceList">
-            
-                <ng-container matColumnDef="qtd">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> 
-                        Qtd 
-                    </th>
-                    <td mat-cell *matCellDef="let element"> 
-                        <button 
-                            mat-icon-button 
-                            (click)="changeQtdFood(element, -1, true)">
-                            <mat-icon>remove</mat-icon>
-                        </button>
-                        <input [id]="element.id" [value]="element.qtd"
-                        type="number" (keyup)="inputQtdFood($event, element)" /> 
-                        <button 
-                            mat-icon-button
-                            (click)="changeQtdFood(element, 1, true)">
-                            <mat-icon>add</mat-icon>
-                        </button>
-                    </td>
-                </ng-container>
-    
+                matSort [dataSource]="dataSourceList"
+                id="tableList">
+
                 <ng-container matColumnDef="description">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> 
                         Descrição 
                     </th>
                     <td mat-cell *matCellDef="let element"> 
                         {{ element.description }} 
+                    </td>
+                    <td mat-footer-cell *matFooterCellDef> 
+                        Total 
+                    </td>
+                </ng-container>
+            
+                <ng-container matColumnDef="portion">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+                        Porção
+                    </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        <input 
+                            [id]="element.id" [value]="element.portion"
+                            type="number" 
+                            (focusout)="changePortionFood($event, element)" /> 
+                        {{ element.portionUnit }}
+                    </td>
+                    <td mat-footer-cell *matFooterCellDef> 
+                        {{ calcPortion() }}
                     </td>
                 </ng-container>
                 
@@ -224,9 +247,12 @@
                     <td mat-cell *matCellDef="let element"> 
                         {{ (element.energy * 1).toFixed(2) }} kcal
                     </td>
+                    <td mat-footer-cell *matFooterCellDef> 
+                        {{ calcKcal() }} 
+                    </td>
                 </ng-container>
     
-                <ng-container matColumnDef="delete">
+                <ng-container matColumnDef="delete" id="delete">
                     <th mat-header-cell *matHeaderCellDef> 
                     </th>
                     <td mat-cell *matCellDef="let element"> 
@@ -238,10 +264,13 @@
                             <mat-icon>delete</mat-icon>
                         </button>
                     </td>
+                    <td mat-footer-cell *matFooterCellDef> 
+                    </td>
                 </ng-container>
                 
                 <tr mat-header-row *matHeaderRowDef="displayedColumnsList; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumnsList;"></tr>
+                <tr mat-footer-row *matFooterRowDef="displayedColumnsList; sticky: true"></tr>
     
             </table>
             <div class="center margin-top button-delete-container">

@@ -17,6 +17,7 @@ input {
     word-wrap: break-word;
     text-align: center;
     width: 30px;
+    padding: .1375em 0;
 
     &:focus {
         overflow: hidden;
@@ -91,6 +92,7 @@ button:focus {
 .button-delete-container {
     position: absolute;
     bottom: 10px;
+    z-index: 200;
 }
 
 .button-delete {
@@ -99,6 +101,7 @@ button:focus {
 
 .loading-container {
     width: 100%;
+    padding: 2%;
     height: 60vh;
     display: flex;
     flex-direction: column;
@@ -114,6 +117,21 @@ button:focus {
     background-color: rgba(0,0,0,.12) !important;
     color: black !important;
     cursor: no-drop !important;
+}
+
+.form-field-small {
+    width: 40px !important;
+    margin-left: 10px;
+}
+
+.action {
+    float: right;
+    position: relative;
+    top: -10px;
+
+    & .mat-icon {
+        font-size: 19px;
+    }
 }
 
 @media only screen and (max-width: 600px) {

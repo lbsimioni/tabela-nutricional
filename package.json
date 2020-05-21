@@ -22,8 +22,12 @@
     "@angular/platform-browser-dynamic": "~9.1.7",
     "@angular/router": "~9.1.7",
     "bootstrap": "^4.5.0",
+    "jspdf": "^1.5.3",
+    "jspdf-autotable": "^3.5.3",
+    "ngx-cookie-service": "^3.0.4",
     "rxjs": "~6.5.5",
     "tslib": "^1.10.0",
+    "xlsx": "^0.16.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
